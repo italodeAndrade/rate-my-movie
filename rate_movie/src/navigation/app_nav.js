@@ -27,7 +27,7 @@ export default function AppNavigator() {
         options={{ title: 'Entrar' }} 
       />
 
-      {/* 3. Rota de Cadastro */}
+  
       <Stack.Screen 
         name="Register" 
         component={RegisterScreen}
