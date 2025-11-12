@@ -22,13 +22,12 @@ export default function RegisterScreen({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={{ fontSize: 24, marginBottom: 20 }}>Tela de Cadastro</Text>
-      
-      <TextInput placeholder="Email" value={email} onChangeText={setEmail} keyboardType="email-address" />
-      <TextInput placeholder="Senha" value={password} onChangeText={setPassword} secureTextEntry />
-      
-      <Button title="CADASTRAR" onPress={handleRegister} />
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text style={{ fontSize: 24, marginBottom: 20 }}>Tela de Registro</Text>
+      <TextInput placeholder="Email" value={email} onChangeText={setEmail} style={{ width: 200, height: 40, borderColor: 'gray', borderWidth: 1, marginBottom: 10, paddingLeft: 5 }} />
+      <TextInput placeholder="Senha" value={password} onChangeText={setPassword} secureTextEntry style={{ width: 200, height: 40, borderColor: 'gray', borderWidth: 1, marginBottom: 10, paddingLeft: 5 }} />
+      <Button title="Registrar" onPress={handleRegister} />
+      <Button title="Voltar ao Login" onPress={() => navigation.goBack()} />
     </View>
   );
 }

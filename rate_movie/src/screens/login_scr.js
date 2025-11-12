@@ -12,7 +12,7 @@ export default function LoginScreen() {
     try {
       const user = await signIn(email, password);
       if (user) {
-        navigation.navigate('Main');
+        navigation.navigate('Home');
       } 
       else {
         alert('Usuário ou senha incorretos');

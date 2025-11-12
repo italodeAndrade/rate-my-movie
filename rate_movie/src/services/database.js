@@ -6,7 +6,7 @@ export async function initDB() {
         db = await SQLite.openDatabaseAsync("movies.db");
 
         await db.runAsync(
-            'CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY NOT NULL, email TEXT NOT NULL UNIQUE, password TEXT NOT NULL);'
+            'CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY NOT NULL, email TEXT NOT NULL UNIQUE, nome TEXT NOT NULL, password TEXT NOT NULL, photo_path TEXT);'
         );
         console.log("Banco de dados 'movies.db' inicializado e tabela criada.");
         
