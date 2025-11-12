@@ -6,6 +6,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { ActivityIndicator, View } from 'react-native';
 import AppNavigator from './src/navigation/app_nav'; 
 import { initDB } from './src/services/database'; 
+import { MoviesProvider } from './src/contexts/MoviesContext';
 
 export default function App() {
   const [dbInitialized, setDbInitialized] = useState(false);
@@ -32,11 +33,12 @@ export default function App() {
   }
   
   return (
-
-    <GestureHandlerRootView style={{ flex: 1 }}> 
-      <NavigationContainer>
-        <AppNavigator />
-      </NavigationContainer>
-    </GestureHandlerRootView>
+    <MoviesProvider>
+      <GestureHandlerRootView style={{ flex: 1 }}> 
+        <NavigationContainer>
+          <AppNavigator />
+        </NavigationContainer>
+      </GestureHandlerRootView>
+    </MoviesProvider>
   );
 }

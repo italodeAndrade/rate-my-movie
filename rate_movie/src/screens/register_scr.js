@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Button, TextInput, Alert, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Alert, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { register } from '../services/auth_servc'; 
 import { saveProfilePhoto } from '../services/img_servc';
 import * as ImagePicker from 'expo-image-picker';
@@ -57,27 +57,79 @@ export default function RegisterScreen({ navigation }) {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Tela de Registro</Text>
+            <Text style={styles.title}>Criar Conta</Text>
+            <Text style={styles.subtitle}>Preencha seus dados para começar</Text>
             
-            {/* ⬇️ Componente para selecionar/visualizar a foto ⬇️ */}
-            <TouchableOpacity onPress={pickImage} style={styles.photoContainer}>
+            <TouchableOpacity 
+                onPress={pickImage} 
+                style={styles.photoContainer}
+                accessibilityLabel="Foto de perfil"
+                accessibilityHint="Toque para selecionar uma foto da galeria"
+                accessibilityRole="button"
+            >
                 {photoUri ? (
-                    <Image source={{ uri: photoUri }} style={styles.profilePhoto} />
+                    <Image 
+                        source={{ uri: photoUri }} 
+                        style={styles.profilePhoto}
+                        accessibilityLabel="Foto de perfil selecionada"
+                    />
                 ) : (
-                    <Text style={styles.photoPlaceholder}>Selecione a Foto</Text>
+                    <>
+                        <Text style={styles.photoIcon}>📷</Text>
+                        <Text style={styles.photoPlaceholder}>Adicionar Foto</Text>
+                    </>
                 )}
             </TouchableOpacity>
-            {/* ⬆️ Fim do componente de foto ⬆️ */}
 
-            <TextInput placeholder="Nome Completo" value={name} onChangeText={setName} style={styles.input} />
-            <TextInput placeholder="Email" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" style={styles.input} />
-            <TextInput placeholder="Senha" value={password} onChangeText={setPassword} secureTextEntry style={styles.input} />
+            <TextInput 
+                placeholder="Nome Completo" 
+                value={name} 
+                onChangeText={setName} 
+                style={styles.input}
+                accessibilityLabel="Campo de nome completo"
+                accessibilityHint="Digite seu nome completo"
+            />
             
-            <Button title="REGISTRAR" onPress={handleRegister} />
+            <TextInput 
+                placeholder="E-mail" 
+                value={email} 
+                onChangeText={setEmail} 
+                keyboardType="email-address" 
+                autoCapitalize="none" 
+                style={styles.input}
+                accessibilityLabel="Campo de e-mail"
+                accessibilityHint="Digite seu e-mail"
+            />
             
-            <View style={{ marginTop: 10 }}>
-                <Button title="Voltar ao Login" onPress={() => navigation.goBack()} />
-            </View>
+            <TextInput 
+                placeholder="Senha" 
+                value={password} 
+                onChangeText={setPassword} 
+                secureTextEntry 
+                style={styles.input}
+                accessibilityLabel="Campo de senha"
+                accessibilityHint="Digite uma senha segura"
+            />
+            
+            <TouchableOpacity 
+                style={styles.registerButton} 
+                onPress={handleRegister}
+                accessibilityLabel="Botão criar conta"
+                accessibilityHint="Toque para criar sua conta"
+                accessibilityRole="button"
+            >
+                <Text style={styles.registerButtonText}>CRIAR CONTA</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+                style={styles.backButton}
+                onPress={() => navigation.goBack()}
+                accessibilityLabel="Voltar"
+                accessibilityHint="Toque para voltar à tela anterior"
+                accessibilityRole="button"
+            >
+                <Text style={styles.backButtonText}>Já tem uma conta? Entre aqui</Text>
+            </TouchableOpacity>
         </View>
     );
 }
@@ -88,39 +140,82 @@ const styles = StyleSheet.create({
         justifyContent: 'center', 
         alignItems: 'center',
         padding: 20,
+        backgroundColor: '#f5f5f5',
     },
     title: {
-        fontSize: 24, 
-        marginBottom: 30,
+        fontSize: 28, 
+        marginBottom: 10,
         fontWeight: 'bold',
+        color: '#333',
+    },
+    subtitle: {
+        fontSize: 14,
+        color: '#666',
+        marginBottom: 30,
     },
     input: {
-        width: '80%', 
-        height: 40, 
-        borderColor: '#ccc', 
+        width: '100%',
+        maxWidth: 400,
+        padding: 15,
+        borderColor: '#ddd', 
         borderWidth: 1, 
         marginBottom: 15, 
-        paddingLeft: 10,
-        borderRadius: 5,
+        borderRadius: 8,
         backgroundColor: 'white',
+        fontSize: 16,
+        minHeight: 50,
     },
     photoContainer: {
-        width: 100,
-        height: 100,
-        borderRadius: 50,
+        width: 120,
+        height: 120,
+        borderRadius: 60,
         backgroundColor: '#E0E0E0',
         justifyContent: 'center',
         alignItems: 'center',
-        marginBottom: 20,
-        overflow: 'hidden'
+        marginBottom: 30,
+        overflow: 'hidden',
+        borderWidth: 3,
+        borderColor: '#007AFF',
     },
     profilePhoto: {
         width: '100%',
         height: '100%',
     },
+    photoIcon: {
+        fontSize: 40,
+        marginBottom: 5,
+    },
     photoPlaceholder: {
         color: '#666',
         textAlign: 'center',
         fontSize: 12,
-    }
+        fontWeight: '600',
+    },
+    registerButton: {
+        backgroundColor: '#007AFF',
+        padding: 15,
+        borderRadius: 8,
+        alignItems: 'center',
+        marginTop: 10,
+        width: '100%',
+        maxWidth: 400,
+        minHeight: 50,
+        justifyContent: 'center',
+    },
+    registerButtonText: {
+        color: '#fff',
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+    backButton: {
+        marginTop: 20,
+        padding: 10,
+        minHeight: 44,
+        justifyContent: 'center',
+    },
+    backButtonText: {
+        color: '#007AFF',
+        fontSize: 14,
+        textDecorationLine: 'underline',
+    },
 });

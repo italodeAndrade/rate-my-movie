@@ -1,33 +1,99 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { getLoggedInUserId } from '../services/auth_servc';
+import { useMovies } from '../contexts/MoviesContext';
 
 export default function InitialScreen() {
   const navigation = useNavigation();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { loadWatchedMovies, clearMovies } = useMovies();
 
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Tela Inicial de Teste</Text>
-      
-      {/* Container para alinhar os botões lado a lado */}
-      <View style={styles.buttonGroup}> 
+  useFocusEffect(
+    React.useCallback(() => {
+      checkLoginStatus();
+    }, [])
+  );
+
+  const checkLoginStatus = async () => {
+    const userId = await getLoggedInUserId();
+    if (userId) {
+      setIsLoggedIn(true);
+      await loadWatchedMovies();
+    } else {
+      setIsLoggedIn(false);
+      clearMovies();
+    }
+  };
+
+  if (!isLoggedIn) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.logo}>🎬</Text>
+        <Text style={styles.title}>Rate My Movie</Text>
+        <Text style={styles.subtitle}>Seu catálogo pessoal de filmes</Text>
         
-        {/* Botão 1: LOGIN */}
         <TouchableOpacity
           style={styles.button}
           onPress={() => navigation.navigate('Login')}
+          accessibilityLabel="Fazer login"
+          accessibilityHint="Toque para ir para a tela de login"
+          accessibilityRole="button"
         >
-          <Text style={styles.buttonText}>LOGIN</Text>
+          <Text style={styles.buttonText}>ENTRAR</Text>
         </TouchableOpacity>
         
-        {/* Botão 2: PERFIL (Para Teste) */}
         <TouchableOpacity
-          style={[styles.button, styles.profileButton]} // Aplica um estilo diferente para diferenciar
-          onPress={() => navigation.navigate('Profile')} // Navega para a rota Profile
+          style={[styles.button, styles.secondaryButton]}
+          onPress={() => navigation.navigate('Register')}
+          accessibilityLabel="Criar conta"
+          accessibilityHint="Toque para criar uma nova conta"
+          accessibilityRole="button"
         >
-          <Text style={styles.buttonText}>PERFIL (TESTE)</Text>
+          <Text style={[styles.buttonText, styles.secondaryButtonText]}>CRIAR CONTA</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.logo}>🎬</Text>
+      <Text style={styles.welcomeTitle}>Bem-vindo!</Text>
+      
+      <View style={styles.menuContainer}>
+        <TouchableOpacity
+          style={styles.menuButton}
+          onPress={() => navigation.navigate('Search')}
+          accessibilityLabel="Buscar filmes"
+          accessibilityHint="Toque para buscar e descobrir novos filmes"
+          accessibilityRole="button"
+        >
+          <Text style={styles.menuIcon}>🔍</Text>
+          <Text style={styles.menuText}>Buscar Filmes</Text>
         </TouchableOpacity>
 
+        <TouchableOpacity
+          style={styles.menuButton}
+          onPress={() => navigation.navigate('MyMovies')}
+          accessibilityLabel="Meus filmes"
+          accessibilityHint="Toque para ver sua lista de filmes assistidos"
+          accessibilityRole="button"
+        >
+          <Text style={styles.menuIcon}>🎞️</Text>
+          <Text style={styles.menuText}>Meus Filmes</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.menuButton}
+          onPress={() => navigation.navigate('Profile')}
+          accessibilityLabel="Meu perfil"
+          accessibilityHint="Toque para ver e editar seu perfil"
+          accessibilityRole="button"
+        >
+          <Text style={styles.menuIcon}>👤</Text>
+          <Text style={styles.menuText}>Meu Perfil</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -38,30 +104,80 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'white',
+    backgroundColor: '#f5f5f5',
+    padding: 20,
+  },
+  logo: {
+    fontSize: 80,
+    marginBottom: 20,
   },
   title: {
-    fontSize: 20,
-    marginBottom: 40,
-    fontWeight: '600',
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#007AFF',
+    marginBottom: 10,
   },
-  buttonGroup: { // Estilo para agrupar os botões horizontalmente
-    flexDirection: 'row',
-    gap: 15, // Espaçamento entre os botões
+  subtitle: {
+    fontSize: 16,
+    color: '#666',
+    marginBottom: 50,
+    textAlign: 'center',
+  },
+  welcomeTitle: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 40,
   },
   button: {
     backgroundColor: '#007AFF',
-    paddingVertical: 10,
-    paddingHorizontal: 15,
+    paddingVertical: 15,
+    paddingHorizontal: 40,
     borderRadius: 8,
+    marginVertical: 10,
+    width: '80%',
+    alignItems: 'center',
+    minHeight: 50,
+    justifyContent: 'center',
   },
-  profileButton: {
-    backgroundColor: '#34C759', // Cor diferente para o botão de teste
+  secondaryButton: {
+    backgroundColor: 'transparent',
+    borderWidth: 2,
+    borderColor: '#007AFF',
   },
   buttonText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
-    textAlign: 'center',
+  },
+  secondaryButtonText: {
+    color: '#007AFF',
+  },
+  menuContainer: {
+    width: '100%',
+    maxWidth: 400,
+  },
+  menuButton: {
+    backgroundColor: '#fff',
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 20,
+    borderRadius: 12,
+    marginVertical: 8,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    minHeight: 70,
+  },
+  menuIcon: {
+    fontSize: 36,
+    marginRight: 20,
+  },
+  menuText: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#333',
   },
 });
