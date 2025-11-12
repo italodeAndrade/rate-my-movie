@@ -28,11 +28,11 @@ export const signIn = async (email, password) => {
  * @param {string} password
  * @returns {Promise<object>}
  */
-export const register = async (email, password) => {
+export const register = async (email,name, password) => {
   try {
-    const userId = await reg(email, password);
+    const userId = await reg(email, name, password);
     await AsyncStorage.setItem(USER_KEY, userId.toString());
-    return { id: userId, email };
+    return { id: userId, email, name };
   } catch (error) {
     console.log("Erro no registro:", error);
     throw error;

@@ -6,12 +6,12 @@ import { getDB } from './database';
  * @param {string} password 
  * @returns {Promise<number>}
  */
-export const register = async (email, password) => {
+export const register = async (email, name, password) => {
     const db = getDB();
-    const query = 'INSERT INTO users (email, password) VALUES (?, ?)';
+    const query = 'INSERT INTO users (email,name, password) VALUES (?,?,?)';
 
     try {
-        const result = await db.runAsync(query, [email, password]);
+        const result = await db.runAsync(query, [email, name, password]);
         return result.lastInsertRowId;
         
     } catch (error) {
