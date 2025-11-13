@@ -21,13 +21,10 @@ export default function LoginScreen() {
           index: 0,
           routes: [{ name: 'Home' }],
         });
-      } 
-      else {
+      } else {
         alert('Usuário ou senha incorretos');
       }
-    } 
-    catch (error) {
-      console.error("Erro no login:", error);
+    } catch (error) {
       alert("Ocorreu um erro durante o login.");
     }
   };

@@ -2,8 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, ActivityIndicator, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { getLoggedInUserId, signOut } from '../services/auth_servc'; 
-import { getUserProfile } from '../services/profile_servc'; 
+import { getLoggedInUserId, signOut, getUserProfile } from '../services/auth_servc'; 
 import { useFocusEffect } from '@react-navigation/native';
 
 export default function ProfileScreen() {
@@ -69,19 +68,22 @@ export default function ProfileScreen() {
         return <View style={styles.center}><Text>Usuário não encontrado.</Text></View>;
     }
     
-    // A foto será carregada do URI local (file:///)
-    const photoSource = user.photo_path 
-        ? { uri: user.photo_path } 
-        : require('../../assets/placeholder.jpg'); // Adicione uma imagem de placeholder no assets/
+    const photoSource = user.photo_path ? { uri: user.photo_path } : null;
 
     return (
         <View style={styles.container}>
             <View style={styles.profileHeader}>
-                <Image 
-                    source={photoSource}
-                    style={styles.profilePhoto}
-                    accessibilityLabel={`Foto de perfil de ${user.name}`}
-                />
+                {photoSource ? (
+                    <Image 
+                        source={photoSource}
+                        style={styles.profilePhoto}
+                        accessibilityLabel={`Foto de perfil de ${user.name}`}
+                    />
+                ) : (
+                    <View style={[styles.profilePhoto, styles.noPhoto]}>
+                        <Text style={styles.noPhotoText}>👤</Text>
+                    </View>
+                )}
                 
                 <Text style={styles.name}>{user.name || 'Nome não definido'}</Text>
                 <Text style={styles.email}>{user.email}</Text>
@@ -148,9 +150,17 @@ const styles = StyleSheet.create({
         height: 120, 
         borderRadius: 60, 
         marginBottom: 20,
-        backgroundColor: '#CCC',
+        backgroundColor: '#e0e0e0',
         borderWidth: 3,
         borderColor: '#007AFF',
+    },
+    noPhoto: {
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    noPhotoText: {
+        fontSize: 48,
+        color: '#999',
     },
     name: { 
         fontSize: 24, 

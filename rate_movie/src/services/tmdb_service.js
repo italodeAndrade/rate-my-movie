@@ -1,5 +1,6 @@
 // src/services/tmdb_service.js
-const API_KEY = 'c679e0e54e2fb8790f10c74c4f90ed55'; // Chave de API pública do TMDb
+// API Key do TMDb - Obtenha a sua em: https://www.themoviedb.org/settings/api
+const API_KEY = '38e5543f64b03b141326816c0c4a08c7'; // Chave válida do TMDb
 const BASE_URL = 'https://api.themoviedb.org/3';
 const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
 
@@ -34,7 +35,6 @@ export const searchMovies = async (query) => {
     
     return [];
   } catch (error) {
-    console.error('Erro ao buscar filmes:', error);
     throw new Error('Falha ao buscar filmes. Verifique sua conexão.');
   }
 };
@@ -65,7 +65,6 @@ export const getMovieDetails = async (movieId) => {
       originalLanguage: movie.original_language,
     };
   } catch (error) {
-    console.error('Erro ao buscar detalhes do filme:', error);
     throw new Error('Falha ao carregar detalhes do filme.');
   }
 };
@@ -95,7 +94,6 @@ export const getPopularMovies = async () => {
     
     return [];
   } catch (error) {
-    console.error('Erro ao buscar filmes populares:', error);
     return [];
   }
 };

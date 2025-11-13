@@ -24,7 +24,6 @@ export const MoviesProvider = ({ children }) => {
                 setWatchedMovies([]);
             }
         } catch (error) {
-            console.error('Erro ao carregar filmes:', error);
             setWatchedMovies([]);
         } finally {
             setLoading(false);

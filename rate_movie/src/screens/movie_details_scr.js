@@ -51,7 +51,7 @@ export default function MovieDetailsScreen({ route, navigation }) {
                 }
             }
         } catch (error) {
-            console.error('Erro ao verificar filme:', error);
+            // Silenciosamente falha - filme simplesmente não será marcado como assistido
         }
     };
 

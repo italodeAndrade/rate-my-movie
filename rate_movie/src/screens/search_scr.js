@@ -6,13 +6,13 @@ import {
     TextInput,
     FlatList,
     TouchableOpacity,
-    Image,
     StyleSheet,
     ActivityIndicator,
     Alert
 } from 'react-native';
 import { searchMovies, getPopularMovies } from '../services/tmdb_service';
 import { useNavigation } from '@react-navigation/native';
+import { MovieCard } from '../components/MovieCard';
 
 export default function SearchScreen() {
     const navigation = useNavigation();
@@ -69,28 +69,7 @@ export default function SearchScreen() {
             accessibilityHint="Toque para ver detalhes do filme"
             accessibilityRole="button"
         >
-            {item.posterPath ? (
-                <Image
-                    source={{ uri: item.posterPath }}
-                    style={styles.poster}
-                    accessibilityLabel={`Pôster do filme ${item.title}`}
-                />
-            ) : (
-                <View style={[styles.poster, styles.noPoster]}>
-                    <Text style={styles.noPosterText}>Sem Imagem</Text>
-                </View>
-            )}
-            <View style={styles.movieInfo}>
-                <Text style={styles.movieTitle} numberOfLines={2}>
-                    {item.title}
-                </Text>
-                <Text style={styles.releaseDate}>
-                    {item.releaseDate ? new Date(item.releaseDate).getFullYear() : 'N/A'}
-                </Text>
-                <View style={styles.ratingContainer}>
-                    <Text style={styles.rating}>⭐ {item.voteAverage?.toFixed(1) || 'N/A'}</Text>
-                </View>
-            </View>
+            <MovieCard movie={item} />
         </TouchableOpacity>
     );
 
@@ -198,43 +177,6 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 4,
-    },
-    poster: {
-        width: 100,
-        height: 150,
-        backgroundColor: '#e0e0e0',
-    },
-    noPoster: {
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    noPosterText: {
-        color: '#999',
-        fontSize: 12,
-    },
-    movieInfo: {
-        flex: 1,
-        padding: 12,
-        justifyContent: 'space-between',
-    },
-    movieTitle: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        marginBottom: 5,
-    },
-    releaseDate: {
-        fontSize: 14,
-        color: '#666',
-        marginBottom: 5,
-    },
-    ratingContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    rating: {
-        fontSize: 14,
-        fontWeight: '600',
-        color: '#f39c12',
     },
     centerContainer: {
         flex: 1,

@@ -34,7 +34,6 @@ export const addWatchedMovie = async (userId, movie, userRating) => {
         if (error.message && error.message.includes('UNIQUE constraint failed')) {
             throw new Error('Você já avaliou este filme.');
         }
-        console.error('Erro ao adicionar filme assistido:', error);
         throw new Error('Erro ao salvar filme.');
     }
 };
@@ -58,7 +57,6 @@ export const updateMovieRating = async (userId, movieId, newRating) => {
     try {
         await db.runAsync(query, [newRating, userId, movieId]);
     } catch (error) {
-        console.error('Erro ao atualizar avaliação:', error);
         throw new Error('Erro ao atualizar avaliação.');
     }
 };
@@ -76,7 +74,6 @@ export const removeWatchedMovie = async (userId, movieId) => {
     try {
         await db.runAsync(query, [userId, movieId]);
     } catch (error) {
-        console.error('Erro ao remover filme:', error);
         throw new Error('Erro ao remover filme.');
     }
 };
@@ -98,7 +95,6 @@ export const getWatchedMovies = async (userId) => {
         const movies = await db.getAllAsync(query, [userId]);
         return movies || [];
     } catch (error) {
-        console.error('Erro ao buscar filmes assistidos:', error);
         throw new Error('Erro ao carregar seus filmes.');
     }
 };
@@ -117,7 +113,6 @@ export const getWatchedMovie = async (userId, movieId) => {
         const movie = await db.getFirstAsync(query, [userId, movieId]);
         return movie || null;
     } catch (error) {
-        console.error('Erro ao verificar filme:', error);
         return null;
     }
 };

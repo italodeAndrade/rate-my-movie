@@ -37,10 +37,9 @@ export const saveProfilePhoto = async (userId, localUri) => {
     const query = 'UPDATE users SET photo_path = ? WHERE id = ?;';
     await db.runAsync(query, [photoUri, userId]);
     
-    return photoUri; // Retorna o novo caminho permanente
+    return photoUri;
     
   } catch (error) {
-    console.error("Erro ao salvar a foto de perfil:", error);
     throw new Error("Falha ao processar e salvar a imagem.");
   }
 };
