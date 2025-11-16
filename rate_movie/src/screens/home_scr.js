@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native'; // TouchableOpacity removido
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { getLoggedInUserId } from '../services/auth_servc';
 import { useMovies } from '../contexts/MoviesContext';
+
+// 1. Importando nosso componente padrão
+import AccessibleButton from '../components/AccessibleButton';
 
 export default function InitialScreen() {
   const navigation = useNavigation();
@@ -29,71 +32,69 @@ export default function InitialScreen() {
   if (!isLoggedIn) {
     return (
       <View style={styles.container}>
-        <Text style={styles.logo}>🎬</Text>
-        <Text style={styles.title}>Rate My Movie</Text>
+        {/* 2. Ocultando emoji (decorativo) do leitor */}
+        <Text style={styles.logo} importantForAccessibility="no">🎬</Text>
+        <Text style={styles.title} accessibilityRole="header">Rate My Movie</Text>
         <Text style={styles.subtitle}>Seu catálogo pessoal de filmes</Text>
-        
-        <TouchableOpacity
+
+        {/* 3. Usando AccessibleButton */}
+        <AccessibleButton
           style={styles.button}
           onPress={() => navigation.navigate('Login')}
-          accessibilityLabel="Fazer login"
+          label="Fazer login" // Trocado de accessibilityLabel para label
           accessibilityHint="Toque para ir para a tela de login"
-          accessibilityRole="button"
         >
           <Text style={styles.buttonText}>ENTRAR</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity
+        </AccessibleButton>
+
+        <AccessibleButton
           style={[styles.button, styles.secondaryButton]}
           onPress={() => navigation.navigate('Register')}
-          accessibilityLabel="Criar conta"
+          label="Criar conta" // Trocado de accessibilityLabel para label
           accessibilityHint="Toque para criar uma nova conta"
-          accessibilityRole="button"
         >
           <Text style={[styles.buttonText, styles.secondaryButtonText]}>CRIAR CONTA</Text>
-        </TouchableOpacity>
+        </AccessibleButton>
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.logo}>🎬</Text>
-      <Text style={styles.welcomeTitle}>Bem-vindo!</Text>
-      
+      <Text style={styles.logo} importantForAccessibility="no">🎬</Text>
+      <Text style={styles.welcomeTitle} accessibilityRole="header">Bem-vindo!</Text>
+
       <View style={styles.menuContainer}>
-        <TouchableOpacity
+        <AccessibleButton
           style={styles.menuButton}
           onPress={() => navigation.navigate('Search')}
-          accessibilityLabel="Buscar filmes"
+          label="Buscar filmes"
           accessibilityHint="Toque para buscar e descobrir novos filmes"
-          accessibilityRole="button"
         >
-          <Text style={styles.menuIcon}>🔍</Text>
+          {/* 4. Ocultando ícone duplicado */}
+          <Text style={styles.menuIcon} importantForAccessibility="no">🔍</Text>
           <Text style={styles.menuText}>Buscar Filmes</Text>
-        </TouchableOpacity>
+        </AccessibleButton>
 
-        <TouchableOpacity
+        <AccessibleButton
           style={styles.menuButton}
           onPress={() => navigation.navigate('MyMovies')}
-          accessibilityLabel="Meus filmes"
+          label="Meus filmes"
           accessibilityHint="Toque para ver sua lista de filmes assistidos"
-          accessibilityRole="button"
         >
-          <Text style={styles.menuIcon}>🎞️</Text>
+          <Text style={styles.menuIcon} importantForAccessibility="no">🎞️</Text>
           <Text style={styles.menuText}>Meus Filmes</Text>
-        </TouchableOpacity>
+        </AccessibleButton>
 
-        <TouchableOpacity
+        <AccessibleButton
           style={styles.menuButton}
           onPress={() => navigation.navigate('Profile')}
-          accessibilityLabel="Meu perfil"
+          label="Meu perfil"
           accessibilityHint="Toque para ver e editar seu perfil"
-          accessibilityRole="button"
         >
-          <Text style={styles.menuIcon}>👤</Text>
+          <Text style={styles.menuIcon} importantForAccessibility="no">👤</Text>
           <Text style={styles.menuText}>Meu Perfil</Text>
-        </TouchableOpacity>
+        </AccessibleButton>
       </View>
     </View>
   );
@@ -137,7 +138,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     width: '80%',
     alignItems: 'center',
-    minHeight: 50,
+    minHeight: 50, // Nosso AccessibleButton já garante 44, mas mantemos o estilo
     justifyContent: 'center',
   },
   secondaryButton: {
@@ -169,7 +170,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    minHeight: 70,
+    minHeight: 70, // Mantém o estilo visual
   },
   menuIcon: {
     fontSize: 36,

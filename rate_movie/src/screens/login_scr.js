@@ -1,12 +1,19 @@
-import React, {useState} from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity} from 'react-native';
+import React, { useState, useRef } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { signIn } from '../services/auth_servc';
+
+// Importando nossos novos componentes acessíveis
+import AccessibleInput from '../components/AccessibleInput';
+import AccessibleButton from '../components/AccessibleButton';
 
 export default function LoginScreen() {
   const navigation = useNavigation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  // REF para gerenciar o foco (RF07)
+  const passwordRef = useRef(null);
 
   const handleLogin = async () => {
     if (!email.trim() || !password.trim()) {
@@ -31,56 +38,59 @@ export default function LoginScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.logo}>🎬</Text>
+      <Text style={styles.logo} accessibilityRole="header">🎬</Text>
       <Text style={styles.title}>Bem-vindo de Volta!</Text>
-      
+
       <View style={styles.formContainer}>
-        <TextInput 
-          placeholder="E-mail" 
-          value={email} 
+        {/* Input de E-mail Refatorado */}
+        <AccessibleInput
+          label="E-mail"
+          placeholder="Digite seu e-mail"
+          value={email}
           onChangeText={setEmail}
-          style={styles.input}
           keyboardType="email-address"
           autoCapitalize="none"
-          accessibilityLabel="Campo de e-mail"
-          accessibilityHint="Digite seu e-mail para fazer login"
-        />
-        
-        <TextInput 
-          placeholder="Senha" 
-          value={password} 
-          onChangeText={setPassword} 
-          secureTextEntry
-          style={styles.input}
-          accessibilityLabel="Campo de senha"
-          accessibilityHint="Digite sua senha"
+          // Gerenciamento de Foco:
+          returnKeyType="next"
+          onSubmitEditing={() => passwordRef.current?.focus()}
         />
 
-        <TouchableOpacity 
-          style={styles.loginButton} 
+        {/* Input de Senha Refatorado */}
+        <AccessibleInput
+          ref={passwordRef} // Recebe o foco do anterior
+          label="Senha"
+          placeholder="Digite sua senha"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+          // Ao dar enter aqui, tenta fazer login
+          returnKeyType="done"
+          onSubmitEditing={handleLogin}
+        />
+
+        {/* Botão de Login Refatorado */}
+        <AccessibleButton
+          label="Entrar no aplicativo"
           onPress={handleLogin}
-          accessibilityLabel="Botão entrar"
-          accessibilityHint="Toque para fazer login"
-          accessibilityRole="button"
+          style={styles.loginButton}
         >
           <Text style={styles.loginButtonText}>ENTRAR</Text>
-        </TouchableOpacity>
-        
-        <View style={styles.divider}>
+        </AccessibleButton>
+
+        <View style={styles.divider} importantForAccessibility="no-hide-descendants">
           <View style={styles.dividerLine} />
           <Text style={styles.dividerText}>ou</Text>
           <View style={styles.dividerLine} />
         </View>
 
-        <TouchableOpacity 
-          style={styles.registerButton}
+        {/* Botão de Cadastro Refatorado */}
+        <AccessibleButton
+          label="Criar uma nova conta"
           onPress={() => navigation.navigate('Register')}
-          accessibilityLabel="Botão criar conta"
-          accessibilityHint="Toque para criar uma nova conta"
-          accessibilityRole="button"
+          style={styles.registerButton}
         >
           <Text style={styles.registerButtonText}>CRIAR NOVA CONTA</Text>
-        </TouchableOpacity>
+        </AccessibleButton>
       </View>
     </View>
   );
@@ -108,24 +118,12 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: 400,
   },
-  input: {
-    backgroundColor: '#fff',
-    padding: 15,
-    borderRadius: 8,
-    marginBottom: 15,
-    fontSize: 16,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    minHeight: 50,
-  },
+  // OBS: O estilo 'input' foi removido daqui pois agora vive dentro do AccessibleInput
   loginButton: {
     backgroundColor: '#007AFF',
-    padding: 15,
     borderRadius: 8,
-    alignItems: 'center',
     marginTop: 10,
-    minHeight: 50,
-    justifyContent: 'center',
+    minHeight: 50, // Mantendo visual original, mas AccessibleButton garante min 44
   },
   loginButtonText: {
     color: '#fff',
@@ -149,13 +147,10 @@ const styles = StyleSheet.create({
   },
   registerButton: {
     backgroundColor: 'transparent',
-    padding: 15,
     borderRadius: 8,
-    alignItems: 'center',
     borderWidth: 2,
     borderColor: '#007AFF',
     minHeight: 50,
-    justifyContent: 'center',
   },
   registerButtonText: {
     color: '#007AFF',

@@ -1,11 +1,10 @@
 // src/components/MovieCard.js
 import React from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 
-/**
- * Componente reutilizável para renderizar informações de um filme
- * Usado em SearchScreen e MyMoviesScreen
- */
+import AccessibleImage from './AccessibleImage';
+
+
 export const MovieCard = ({ movie, showUserRating = false, showWatchedDate = false }) => {
     const renderStars = (rating) => {
         let stars = '';
@@ -15,7 +14,6 @@ export const MovieCard = ({ movie, showUserRating = false, showWatchedDate = fal
         return stars;
     };
 
-    // Determina qual campo usar baseado no tipo de tela
     const posterPath = movie.posterPath || movie.poster_path;
     const title = movie.title;
     const releaseDate = movie.releaseDate || movie.release_date;
@@ -24,32 +22,35 @@ export const MovieCard = ({ movie, showUserRating = false, showWatchedDate = fal
     return (
         <>
             {posterPath ? (
-                <Image
+                // MUDANÇA: Usando AccessibleImage
+                <AccessibleImage
                     source={{ uri: posterPath }}
                     style={styles.poster}
-                    accessibilityLabel={`Pôster do filme ${title}`}
+                    // MUDANÇA: Usando a prop 'alt' que definimos
+                    alt={`Pôster do filme ${title}`}
                 />
             ) : (
                 <View style={[styles.poster, styles.noPoster]}>
                     <Text style={styles.noPosterText}>Sem Imagem</Text>
                 </View>
             )}
-            
+
             <View style={styles.movieInfo}>
+                {/* ... (O restante do arquivo permanece idêntico) ... */}
                 <Text style={styles.movieTitle} numberOfLines={2}>
                     {title}
                 </Text>
-                
+
                 <Text style={styles.releaseDate}>
                     {releaseDate ? new Date(releaseDate).getFullYear() : 'N/A'}
                 </Text>
-                
+
                 <View style={styles.ratingContainer}>
                     <Text style={styles.rating}>
                         {showUserRating ? 'TMDb: ' : ''}⭐ {voteAverage?.toFixed(1) || 'N/A'}
                     </Text>
                 </View>
-                
+
                 {showUserRating && movie.user_rating && (
                     <View style={styles.userRatingContainer}>
                         <Text style={styles.userRatingLabel}>Sua avaliação:</Text>
@@ -58,7 +59,7 @@ export const MovieCard = ({ movie, showUserRating = false, showWatchedDate = fal
                         </Text>
                     </View>
                 )}
-                
+
                 {showWatchedDate && movie.watched_date && (
                     <Text style={styles.watchedDate}>
                         Assistido em: {new Date(movie.watched_date).toLocaleDateString('pt-BR')}

@@ -1,9 +1,14 @@
 // src/screens/ProfileScreen.js
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, ActivityIndicator, Alert } from 'react-native';
+// MUDANÇA: Image e TouchableOpacity removidos
+import { View, Text, StyleSheet, ActivityIndicator, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { getLoggedInUserId, signOut, getUserProfile } from '../services/auth_servc'; 
+import { getLoggedInUserId, signOut, getUserProfile } from '../services/auth_servc';
 import { useFocusEffect } from '@react-navigation/native';
+
+// MUDANÇA: Importando nossos componentes acessíveis
+import AccessibleButton from '../components/AccessibleButton.js';
+import AccessibleImage from '../components/AccessibleImage.js';
 
 export default function ProfileScreen() {
     const navigation = useNavigation();
@@ -67,76 +72,92 @@ export default function ProfileScreen() {
     if (!user) {
         return <View style={styles.center}><Text>Usuário não encontrado.</Text></View>;
     }
-    
+
     const photoSource = user.photo_path ? { uri: user.photo_path } : null;
 
     return (
         <View style={styles.container}>
             <View style={styles.profileHeader}>
                 {photoSource ? (
-                    <Image 
+                    // MUDANÇA: Trocado Image por AccessibleImage
+                    <AccessibleImage
                         source={photoSource}
                         style={styles.profilePhoto}
-                        accessibilityLabel={`Foto de perfil de ${user.name}`}
+                        // MUDANÇA: Trocado accessibilityLabel por alt
+                        alt={`Foto de perfil de ${user.name}`}
                     />
                 ) : (
-                    <View style={[styles.profilePhoto, styles.noPhoto]}>
-                        <Text style={styles.noPhotoText}>👤</Text>
+                    // MUDANÇA: Adicionado label ao fallback e emoji oculto
+                    <View
+                        style={[styles.profilePhoto, styles.noPhoto]}
+                        accessibilityLabel="Sem foto de perfil"
+                    >
+                        <Text style={styles.noPhotoText} importantForAccessibility="no">👤</Text>
                     </View>
                 )}
-                
+
                 <Text style={styles.name}>{user.name || 'Nome não definido'}</Text>
                 <Text style={styles.email}>{user.email}</Text>
             </View>
 
             <View style={styles.menuSection}>
-                <TouchableOpacity 
+                {/* MUDANÇA: Trocado TouchableOpacity por AccessibleButton */}
+                <AccessibleButton
                     style={styles.menuItem}
                     onPress={() => navigation.navigate('MyMovies')}
-                    accessibilityLabel="Ver meus filmes"
+                    // MUDANÇA: Trocado accessibilityLabel por label
+                    label="Ver meus filmes"
                     accessibilityHint="Toque para ver sua lista de filmes assistidos"
-                    accessibilityRole="button"
                 >
-                    <Text style={styles.menuIcon}>🎞️</Text>
+                    {/* MUDANÇA: Ocultando emoji decorativo */}
+                    <Text style={styles.menuIcon} importantForAccessibility="no">🎞️</Text>
                     <Text style={styles.menuText}>Meus Filmes Assistidos</Text>
                     <Text style={styles.menuArrow}>›</Text>
-                </TouchableOpacity>
+                </AccessibleButton>
 
-                <TouchableOpacity 
+                {/* MUDANÇA: Trocado TouchableOpacity por AccessibleButton */}
+                <AccessibleButton
                     style={styles.menuItem}
                     onPress={() => navigation.navigate('Search')}
-                    accessibilityLabel="Buscar filmes"
+                    // MUDANÇA: Trocado accessibilityLabel por label
+                    label="Buscar filmes"
                     accessibilityHint="Toque para buscar novos filmes"
-                    accessibilityRole="button"
                 >
-                    <Text style={styles.menuIcon}>🔍</Text>
+                    {/* MUDANÇA: Ocultando emoji decorativo */}
+                    <Text style={styles.menuIcon} importantForAccessibility="no">🔍</Text>
                     <Text style={styles.menuText}>Buscar Filmes</Text>
                     <Text style={styles.menuArrow}>›</Text>
-                </TouchableOpacity>
+                </AccessibleButton>
             </View>
 
-            <TouchableOpacity 
+            {/* MUDANÇA: Trocado TouchableOpacity por AccessibleButton */}
+            <AccessibleButton
                 style={styles.logoutButton}
                 onPress={handleLogout}
-                accessibilityLabel="Sair da conta"
+                // MUDANÇA: Trocado accessibilityLabel por label
+                label="Sair da conta"
                 accessibilityHint="Toque para fazer logout"
-                accessibilityRole="button"
             >
-                <Text style={styles.logoutButtonText}>🚪 SAIR</Text>
-            </TouchableOpacity>
+                <Text style={styles.logoutButtonText}>
+                    {/* MUDANÇA: Ocultando emoji decorativo */}
+                    <Text importantForAccessibility="no">🚪 </Text>
+                    SAIR
+                </Text>
+            </AccessibleButton>
         </View>
     );
 }
 
+// ... (Estilos permanecem idênticos) ...
 const styles = StyleSheet.create({
-    container: { 
-        flex: 1, 
-        backgroundColor: '#f5f5f5' 
+    container: {
+        flex: 1,
+        backgroundColor: '#f5f5f5'
     },
-    center: { 
-        flex: 1, 
-        justifyContent: 'center', 
-        alignItems: 'center' 
+    center: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     profileHeader: {
         backgroundColor: '#fff',
@@ -145,10 +166,10 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: '#e0e0e0',
     },
-    profilePhoto: { 
-        width: 120, 
-        height: 120, 
-        borderRadius: 60, 
+    profilePhoto: {
+        width: 120,
+        height: 120,
+        borderRadius: 60,
         marginBottom: 20,
         backgroundColor: '#e0e0e0',
         borderWidth: 3,
@@ -162,15 +183,15 @@ const styles = StyleSheet.create({
         fontSize: 48,
         color: '#999',
     },
-    name: { 
-        fontSize: 24, 
-        fontWeight: 'bold', 
+    name: {
+        fontSize: 24,
+        fontWeight: 'bold',
         marginBottom: 5,
         color: '#333',
     },
-    email: { 
-        fontSize: 16, 
-        color: '#666' 
+    email: {
+        fontSize: 16,
+        color: '#666'
     },
     menuSection: {
         marginTop: 20,
@@ -185,7 +206,7 @@ const styles = StyleSheet.create({
         padding: 20,
         borderBottomWidth: 1,
         borderBottomColor: '#f0f0f0',
-        minHeight: 70,
+        minHeight: 70, // Estilo original já era acessível (>= 44)
     },
     menuIcon: {
         fontSize: 24,
@@ -200,13 +221,13 @@ const styles = StyleSheet.create({
         fontSize: 24,
         color: '#ccc',
     },
-    logoutButton: { 
+    logoutButton: {
         margin: 20,
         backgroundColor: '#ff3b30',
         padding: 15,
         borderRadius: 8,
         alignItems: 'center',
-        minHeight: 50,
+        minHeight: 50, // Estilo original já era acessível (>= 44)
         justifyContent: 'center',
     },
     logoutButtonText: {

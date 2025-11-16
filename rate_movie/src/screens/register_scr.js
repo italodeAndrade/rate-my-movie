@@ -1,8 +1,13 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Alert, TouchableOpacity, Image, StyleSheet } from 'react-native';
-import { register } from '../services/auth_servc'; 
+import React, { useState, useRef } from 'react';
+import { View, Text, Alert, StyleSheet } from 'react-native';
+import { register } from '../services/auth_servc';
 import { saveProfilePhoto } from '../services/img_servc';
 import * as ImagePicker from 'expo-image-picker';
+
+// Importando os componentes acessíveis que criamos
+import AccessibleInput from '../components/AccessibleInput';
+import AccessibleButton from '../components/AccessibleButton';
+import AccessibleImage from '../components/AccessibleImage';
 
 export default function RegisterScreen({ navigation }) {
     // 1. Estados
@@ -10,6 +15,10 @@ export default function RegisterScreen({ navigation }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [name, setName] = useState('');
+
+    // 2. Refs para Gerenciamento de Foco (RF07)
+    const emailRef = useRef(null);
+    const passwordRef = useRef(null);
 
     const pickImage = async () => {
         const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -26,7 +35,7 @@ export default function RegisterScreen({ navigation }) {
         });
 
         if (!result.canceled) {
-            setPhotoUri(result.assets[0].uri); 
+            setPhotoUri(result.assets[0].uri);
         }
     };
 
@@ -35,115 +44,114 @@ export default function RegisterScreen({ navigation }) {
             Alert.alert('Erro', 'Preencha todos os campos.');
             return;
         }
-        
+
         try {
-            // 1. Registra o usuário no DB para obter o ID
             const user = await register(email, name, password);
-            
-            // 2. Se houver foto, salva o arquivo localmente e atualiza o DB
+
             if (photoUri) {
-                // O serviço saveProfilePhoto deve receber o ID e o URI temporário
                 await saveProfilePhoto(user.id, photoUri);
             }
-            
+
             Alert.alert('Conta Criada!', `Bem-vindo(a), ${user.name}.`);
-            navigation.navigate('Login'); // Redireciona para o login após sucesso
-        } 
+            navigation.navigate('Login');
+        }
         catch (error) {
-            // Trata erros de email duplicado ou falha de DB/rede
             Alert.alert('Erro no Cadastro', error.message);
         }
     };
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Criar Conta</Text>
+            <Text style={styles.title} accessibilityRole="header">Criar Conta</Text>
             <Text style={styles.subtitle}>Preencha seus dados para começar</Text>
-            
-            <TouchableOpacity 
-                onPress={pickImage} 
+
+            {/* Área da Foto: Agora é um botão acessível */}
+            <AccessibleButton
+                onPress={pickImage}
                 style={styles.photoContainer}
-                accessibilityLabel="Foto de perfil"
-                accessibilityHint="Toque para selecionar uma foto da galeria"
-                accessibilityRole="button"
+                label={photoUri ? "Alterar foto de perfil" : "Adicionar foto de perfil"}
             >
                 {photoUri ? (
-                    <Image 
-                        source={{ uri: photoUri }} 
+                    <AccessibleImage
+                        source={{ uri: photoUri }}
                         style={styles.profilePhoto}
-                        accessibilityLabel="Foto de perfil selecionada"
+                        alt="Sua foto de perfil selecionada"
                     />
                 ) : (
                     <>
-                        <Text style={styles.photoIcon}>📷</Text>
+                        <Text style={styles.photoIcon} importantForAccessibility="no">📷</Text>
                         <Text style={styles.photoPlaceholder}>Adicionar Foto</Text>
                     </>
                 )}
-            </TouchableOpacity>
+            </AccessibleButton>
 
-            <TextInput 
-                placeholder="Nome Completo" 
-                value={name} 
-                onChangeText={setName} 
-                style={styles.input}
-                accessibilityLabel="Campo de nome completo"
-                accessibilityHint="Digite seu nome completo"
-            />
-            
-            <TextInput 
-                placeholder="E-mail" 
-                value={email} 
-                onChangeText={setEmail} 
-                keyboardType="email-address" 
-                autoCapitalize="none" 
-                style={styles.input}
-                accessibilityLabel="Campo de e-mail"
-                accessibilityHint="Digite seu e-mail"
-            />
-            
-            <TextInput 
-                placeholder="Senha" 
-                value={password} 
-                onChangeText={setPassword} 
-                secureTextEntry 
-                style={styles.input}
-                accessibilityLabel="Campo de senha"
-                accessibilityHint="Digite uma senha segura"
-            />
-            
-            <TouchableOpacity 
-                style={styles.registerButton} 
+            {/* Formulário com Foco Gerenciado */}
+            <View style={styles.formContainer}>
+                <AccessibleInput
+                    label="Nome Completo"
+                    placeholder="Ex: Otávio Silva"
+                    value={name}
+                    onChangeText={setName}
+                    // Pula para o próximo campo (email)
+                    returnKeyType="next"
+                    onSubmitEditing={() => emailRef.current?.focus()}
+                />
+
+                <AccessibleInput
+                    ref={emailRef} // Recebe o foco do nome
+                    label="E-mail"
+                    placeholder="exemplo@email.com"
+                    value={email}
+                    onChangeText={setEmail}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    // Pula para o próximo campo (senha)
+                    returnKeyType="next"
+                    onSubmitEditing={() => passwordRef.current?.focus()}
+                />
+
+                <AccessibleInput
+                    ref={passwordRef} // Recebe o foco do email
+                    label="Senha"
+                    placeholder="Crie uma senha segura"
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry
+                    // Fecha o teclado e tenta registrar
+                    returnKeyType="done"
+                    onSubmitEditing={handleRegister}
+                />
+            </View>
+
+            <AccessibleButton
+                style={styles.registerButton}
                 onPress={handleRegister}
-                accessibilityLabel="Botão criar conta"
-                accessibilityHint="Toque para criar sua conta"
-                accessibilityRole="button"
+                label="Finalizar cadastro e criar conta"
             >
                 <Text style={styles.registerButtonText}>CRIAR CONTA</Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity 
+            </AccessibleButton>
+
+            <AccessibleButton
                 style={styles.backButton}
                 onPress={() => navigation.goBack()}
-                accessibilityLabel="Voltar"
-                accessibilityHint="Toque para voltar à tela anterior"
-                accessibilityRole="button"
+                label="Voltar para a tela de login"
             >
                 <Text style={styles.backButtonText}>Já tem uma conta? Entre aqui</Text>
-            </TouchableOpacity>
+            </AccessibleButton>
         </View>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1, 
-        justifyContent: 'center', 
+        flex: 1,
+        justifyContent: 'center',
         alignItems: 'center',
         padding: 20,
         backgroundColor: '#f5f5f5',
     },
     title: {
-        fontSize: 28, 
+        fontSize: 28,
         marginBottom: 10,
         fontWeight: 'bold',
         color: '#333',
@@ -153,25 +161,16 @@ const styles = StyleSheet.create({
         color: '#666',
         marginBottom: 30,
     },
-    input: {
+    // Container para limitar a largura dos inputs em tablets/web
+    formContainer: {
         width: '100%',
         maxWidth: 400,
-        padding: 15,
-        borderColor: '#ddd', 
-        borderWidth: 1, 
-        marginBottom: 15, 
-        borderRadius: 8,
-        backgroundColor: 'white',
-        fontSize: 16,
-        minHeight: 50,
     },
     photoContainer: {
         width: 120,
         height: 120,
         borderRadius: 60,
         backgroundColor: '#E0E0E0',
-        justifyContent: 'center',
-        alignItems: 'center',
         marginBottom: 30,
         overflow: 'hidden',
         borderWidth: 3,
@@ -193,14 +192,11 @@ const styles = StyleSheet.create({
     },
     registerButton: {
         backgroundColor: '#007AFF',
-        padding: 15,
         borderRadius: 8,
-        alignItems: 'center',
         marginTop: 10,
         width: '100%',
         maxWidth: 400,
         minHeight: 50,
-        justifyContent: 'center',
     },
     registerButtonText: {
         color: '#fff',
@@ -210,8 +206,6 @@ const styles = StyleSheet.create({
     backButton: {
         marginTop: 20,
         padding: 10,
-        minHeight: 44,
-        justifyContent: 'center',
     },
     backButtonText: {
         color: '#007AFF',

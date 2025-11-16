@@ -1,12 +1,9 @@
-// src/screens/movie_details_scr.js
 import React, { useState, useEffect } from 'react';
 import {
     View,
     Text,
-    Image,
     StyleSheet,
     ScrollView,
-    TouchableOpacity,
     ActivityIndicator,
     Alert,
 } from 'react-native';
@@ -14,6 +11,9 @@ import { getMovieDetails } from '../services/tmdb_service';
 import { addWatchedMovie, updateMovieRating, getWatchedMovie } from '../services/movies_service';
 import { getLoggedInUserId } from '../services/auth_servc';
 import { useMovies } from '../contexts/MoviesContext';
+
+import AccessibleImage from '../components/AccessibleImage';
+import AccessibleButton from '../components/AccessibleButton';
 
 export default function MovieDetailsScreen({ route, navigation }) {
     const { movieId } = route.params;
@@ -51,7 +51,7 @@ export default function MovieDetailsScreen({ route, navigation }) {
                 }
             }
         } catch (error) {
-            // Silenciosamente falha - filme simplesmente não será marcado como assistido
+            // Silenciosamente falha
         }
     };
 
@@ -60,15 +60,12 @@ export default function MovieDetailsScreen({ route, navigation }) {
             Alert.alert('Atenção', 'Selecione uma avaliação de 1 a 5 estrelas.');
             return;
         }
-
         try {
             const userId = await getLoggedInUserId();
-            
             if (!userId) {
                 Alert.alert('Erro', 'Você precisa estar logado.');
                 return;
             }
-
             if (alreadyWatched) {
                 await updateMovieRating(userId, movieId, selectedRating);
                 Alert.alert('Sucesso', 'Avaliação atualizada!');
@@ -77,7 +74,6 @@ export default function MovieDetailsScreen({ route, navigation }) {
                 setAlreadyWatched(true);
                 Alert.alert('Sucesso', 'Filme adicionado aos seus assistidos!');
             }
-            
             await refreshMovies();
         } catch (error) {
             Alert.alert('Erro', error.message);
@@ -88,18 +84,17 @@ export default function MovieDetailsScreen({ route, navigation }) {
         const stars = [];
         for (let i = 1; i <= 5; i++) {
             stars.push(
-                <TouchableOpacity
+                <AccessibleButton
                     key={i}
                     onPress={() => setSelectedRating(i)}
                     style={styles.starButton}
-                    accessibilityLabel={`${i} estrela${i > 1 ? 's' : ''}`}
+                    label={`${i} estrela${i > 1 ? 's' : ''}`}
                     accessibilityHint={`Toque para avaliar com ${i} estrela${i > 1 ? 's' : ''}`}
-                    accessibilityRole="button"
                 >
-                    <Text style={styles.star}>
+                    <Text style={styles.star} importantForAccessibility="no">
                         {i <= selectedRating ? '⭐' : '☆'}
                     </Text>
-                </TouchableOpacity>
+                </AccessibleButton>
             );
         }
         return stars;
@@ -124,20 +119,20 @@ export default function MovieDetailsScreen({ route, navigation }) {
     return (
         <ScrollView style={styles.container}>
             {movie.backdropPath && (
-                <Image
+                <AccessibleImage
                     source={{ uri: movie.backdropPath }}
                     style={styles.backdrop}
-                    accessibilityLabel={`Imagem de fundo do filme ${movie.title}`}
+                    alt={`Imagem de fundo do filme ${movie.title}`}
                 />
             )}
 
             <View style={styles.content}>
                 <View style={styles.headerContainer}>
                     {movie.posterPath && (
-                        <Image
+                        <AccessibleImage
                             source={{ uri: movie.posterPath }}
                             style={styles.poster}
-                            accessibilityLabel={`Pôster do filme ${movie.title}`}
+                            alt={`Pôster do filme ${movie.title}`}
                         />
                     )}
                     <View style={styles.headerInfo}>
@@ -147,11 +142,15 @@ export default function MovieDetailsScreen({ route, navigation }) {
                         </Text>
                         <View style={styles.ratingContainer}>
                             <Text style={styles.tmdbRating}>
-                                ⭐ {movie.voteAverage?.toFixed(1) || 'N/A'} / 10
+                                <Text importantForAccessibility="no">⭐ </Text>
+                                {movie.voteAverage?.toFixed(1) || 'N/A'} / 10
                             </Text>
                         </View>
                         {movie.runtime && (
-                            <Text style={styles.runtime}>⏱️ {movie.runtime} min</Text>
+                            <Text style={styles.runtime}>
+                                <Text importantForAccessibility="no">⏱️ </Text>
+                                {movie.runtime} min
+                            </Text>
                         )}
                     </View>
                 </View>
@@ -177,17 +176,19 @@ export default function MovieDetailsScreen({ route, navigation }) {
                     </Text>
                 </View>
 
-                <TouchableOpacity
+                <AccessibleButton
                     style={styles.saveButton}
                     onPress={handleSaveRating}
-                    accessibilityLabel={alreadyWatched ? 'Atualizar avaliação' : 'Salvar filme'}
+                    label={alreadyWatched ? 'Atualizar avaliação' : 'Salvar filme'}
                     accessibilityHint={alreadyWatched ? 'Toque para atualizar sua avaliação' : 'Toque para adicionar aos filmes assistidos'}
-                    accessibilityRole="button"
                 >
                     <Text style={styles.saveButtonText}>
-                        {alreadyWatched ? '✏️ Atualizar Avaliação' : '💾 Salvar nos Assistidos'}
+                        <Text importantForAccessibility="no">
+                            {alreadyWatched ? '✏️ ' : '💾 '}
+                        </Text>
+                        {alreadyWatched ? 'Atualizar Avaliação' : 'Salvar nos Assistidos'}
                     </Text>
-                </TouchableOpacity>
+                </AccessibleButton>
             </View>
         </ScrollView>
     );
