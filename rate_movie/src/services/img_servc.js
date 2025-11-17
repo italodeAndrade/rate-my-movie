@@ -1,5 +1,5 @@
 
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 import { getDB } from './database';
 
 const PROFILE_PHOTOS_DIR = FileSystem.documentDirectory + 'profile_photos/';

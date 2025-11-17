@@ -40,7 +40,7 @@ export default function RegisterScreen({ navigation }) {
     };
 
     const handleRegister = async () => {
-        if (!name || !email || !password) {
+        if (!photoUri || !name || !email || !password) {
             Alert.alert('Erro', 'Preencha todos os campos.');
             return;
         }
@@ -53,7 +53,7 @@ export default function RegisterScreen({ navigation }) {
             }
 
             Alert.alert('Conta Criada!', `Bem-vindo(a), ${user.name}.`);
-            navigation.navigate('Login');
+            navigation.navigate('Home');
         }
         catch (error) {
             Alert.alert('Erro no Cadastro', error.message);
@@ -65,7 +65,6 @@ export default function RegisterScreen({ navigation }) {
             <Text style={styles.title} accessibilityRole="header">Criar Conta</Text>
             <Text style={styles.subtitle}>Preencha seus dados para começar</Text>
 
-            {/* Área da Foto: Agora é um botão acessível */}
             <AccessibleButton
                 onPress={pickImage}
                 style={styles.photoContainer}

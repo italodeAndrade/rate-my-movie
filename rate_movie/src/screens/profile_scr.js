@@ -30,6 +30,7 @@ export default function ProfileScreen() {
         if (userId) {
             try {
                 const profileData = await getUserProfile(userId);
+                console.log("DADOS DO PERFIL DO DB:", profileData);
                 setUser(profileData);
             } catch (error) {
                 Alert.alert("Erro", "Falha ao carregar dados do perfil.");
